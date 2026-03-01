@@ -24,6 +24,21 @@ const userSchema = mongoose.Schema( {
         required: [true, 'Please enter the number'],
         unique: true
     },
+    otp: {
+        type: Number,
+        default: null,
+        required: false
+    },
+    emailVerfied: {
+        type: Boolean,
+        default: false,
+        required: false
+    },
+    theme: {
+        type: String,
+        default: '#00C950',
+        required: false
+    }
 }, {
     timestamps: true
 } )
