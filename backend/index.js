@@ -4,6 +4,7 @@ import colors from "colors";
 import { authRouter } from "./routes/userRoutes.js";
 import { errorHandler } from "./middlewares/errorMiddlewares.js";
 import { connectDB } from "./database/connect.js";
+import cors from 'cors'
 dotenv.config();
 
 // For ESM (import syntax)
@@ -15,16 +16,16 @@ dns.setServers(["1.1.1.1", "1.0.0.1", "8.8.8.8"]);
 // dns.setServers(["1.1.1.1", "1.0.0.1", "8.8.8.8"]);
 
 const app = express();
-
+app.use( cors() )
 connectDB();
 
-app.use(express.json());
-app.use(express.urlencoded());
+app.use( express.json() );
+app.use( express.urlencoded() );
 
-app.use("/api/auth", authRouter);
+app.use( "/api/auth", authRouter );
 
-app.use(errorHandler);
+app.use( errorHandler );
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server started on port:${process.env.PORT.yellow}`);
-});
+app.listen( process.env.PORT, () => {
+  console.log( `Server started on port:${process.env.PORT.yellow}` );
+} );
