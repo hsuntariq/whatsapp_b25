@@ -1,0 +1,25 @@
+import mongoose from 'mongoose'
+
+
+
+const chatSchema = mongoose.Schema( {
+    chats: {
+        type: Array,
+        default: []
+    },
+    sender_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
+    receiver_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    }
+
+}, {
+    timestamps: true
+} )
+
+export const Chat = mongoose.model( 'Chat', chatSchema )

@@ -203,6 +203,10 @@ export const registerUser = async ( req, res ) => {
   const newUser = await User.create( {
     name, email, password: hashPassword, number, otp: myOTP
   } )
+
+
+
+
   res.send( newUser )
 };
 

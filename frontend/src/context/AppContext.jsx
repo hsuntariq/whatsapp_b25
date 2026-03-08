@@ -1,12 +1,23 @@
 
 // create the context
 
-import { createContext } from "react";
+import { createContext, useContext, useState } from "react";
 
 export const AppContext = createContext()
 
 export const AppProvider = ( { children } ) => {
-    return <AppContext.Provider value={{}}>
+
+    const [selectedChat, setSelectedChat] = useState( null )
+
+
+
+
+    return <AppContext.Provider value={{
+        selectedChat, setSelectedChat
+    }}>
         {children}
     </AppContext.Provider>
 }
+
+
+export const useGlobalContext = () => useContext( AppContext )
