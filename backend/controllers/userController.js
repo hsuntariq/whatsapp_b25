@@ -255,3 +255,11 @@ export const verifyOTP = async ( req, res ) => {
 
 
 }
+
+
+// get all the user from the db
+
+export const getAllUsers = async ( req, res ) => {
+  let allUsers = await User.find( { emailVerfied: true } );
+  res.send( allUsers )
+}

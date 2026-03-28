@@ -1,10 +1,28 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaChartArea, FaSearch, FaTheRedYeti } from 'react-icons/fa'
 import { whatsappChats } from '../data/whatsappChats'
 import SingleChat from './SingleChat'
+import axios from 'axios';
 const Sidebar = () => {
 
     const [selected, setSelected] = useState( 'All' )
+    const [chats, setChats] = useState( [] )
+
+    // get all the user from backend
+
+    const myUsers = async () => {
+        const response = await axios.get( 'http://localhost:5174/api/auth/get-all-users' );
+        setChats( response.data )
+    }
+
+
+    useEffect( () => {
+        myUsers()
+    }, [] )
+
+
+
+
 
     return (
         <>
@@ -43,7 +61,7 @@ const Sidebar = () => {
 
 
                 {
-                    whatsappChats.map( ( item, index ) => {
+                    chats.map( ( item, index ) => {
                         return <SingleChat key={index} {...item} />
                     } )
                 }

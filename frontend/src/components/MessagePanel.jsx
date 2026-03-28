@@ -14,7 +14,7 @@ const MessagePanel = () => {
                     <div className="flex border border-zinc-800  bg-primary p-3 justify-between items-center">
                         <div className="flex w-full gap-2">
                             <div className="flex gap-3 items-center">
-                                <img src={selectedChat.image} className='w-12 h-12 rounded-full' alt="" />
+                                <img src={selectedChat.image ? selectedChat.image : 'https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png'} className='w-12 h-12 rounded-full object-cover' alt="" />
                                 <h4 className="font-semibold">{selectedChat.name}</h4>
                             </div>
 

@@ -9,7 +9,8 @@ dotenv.config();
 
 // For ESM (import syntax)
 import dns from "node:dns/promises";
-dns.setServers(["1.1.1.1", "1.0.0.1", "8.8.8.8"]);
+import { chatRouter } from "./routes/chatRoutes.js";
+dns.setServers( ["1.1.1.1", "1.0.0.1", "8.8.8.8"] );
 
 // // OR for CommonJS (require syntax)
 // const dns = require("node:dns/promises");
@@ -23,6 +24,7 @@ app.use( express.json() );
 app.use( express.urlencoded() );
 
 app.use( "/api/auth", authRouter );
+app.use( "/api/chat", chatRouter );
 
 app.use( errorHandler );
 

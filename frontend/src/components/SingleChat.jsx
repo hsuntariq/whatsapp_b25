@@ -12,7 +12,7 @@ const SingleChat = ( { name, image, time, message, id } ) => {
                 name, image, id
             } )} className="flex cursor-pointer justify-between my-7">
                 <div className="flex gap-3 items-center">
-                    <img src={image} className='w-12 h-12 rounded-full' alt="" />
+                    <img src={image ? image : 'https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png'} className='w-12 object-cover h-12 rounded-full' alt="" />
                     <div className="">
                         <h4 className="font-semibold">{name}</h4>
                         <p className="text-gray-600 text-sm">

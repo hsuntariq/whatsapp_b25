@@ -1,114 +1,128 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { FiArrowLeft, FiSmartphone } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { verfiyOTP } from "../features/auth/authSlice";
+import toast from "react-hot-toast";
+import { BounceLoader } from 'react-spinners'
 const OTPVerification = () => {
-  const [otp, setOtp] = useState(""); // OTP as string
-  const [error, setError] = useState("");
-  const [resendDisabled, setResendDisabled] = useState(false);
-  const [timer, setTimer] = useState(60);
+  const [otp, setOtp] = useState( "" ); // OTP as string
+  const [error, setError] = useState( "" );
+  const [resendDisabled, setResendDisabled] = useState( false );
+  const [timer, setTimer] = useState( 60 );
   const navigate = useNavigate();
 
-  const inputRefs = useRef([]);
+  const inputRefs = useRef( [] );
 
   // focus first input
-  useEffect(() => {
+  useEffect( () => {
     inputRefs.current[0]?.focus();
-  }, []);
+  }, [] );
 
   // resend timer
-  useEffect(() => {
+  useEffect( () => {
     let interval;
 
-    if (resendDisabled && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (timer === 0) {
-      setResendDisabled(false);
+    if ( resendDisabled && timer > 0 ) {
+      interval = setInterval( () => {
+        setTimer( ( prev ) => prev - 1 );
+      }, 1000 );
+    } else if ( timer === 0 ) {
+      setResendDisabled( false );
     }
 
-    return () => clearInterval(interval);
-  }, [resendDisabled, timer]);
+    return () => clearInterval( interval );
+  }, [resendDisabled, timer] );
 
   // input change
-  const handleChange = (e, index) => {
+  const handleChange = ( e, index ) => {
     const value = e.target.value;
 
-    if (!/^\d*$/.test(value)) return;
+    if ( !/^\d*$/.test( value ) ) return;
 
-    let newOtp = otp.split("");
+    let newOtp = otp.split( "" );
 
-    newOtp[index] = value.slice(-1);
+    newOtp[index] = value.slice( -1 );
 
-    const updatedOtp = newOtp.join("");
+    const updatedOtp = newOtp.join( "" );
 
-    setOtp(updatedOtp);
+    setOtp( updatedOtp );
 
-    if (value && index < 3) {
+    if ( value && index < 3 ) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   // backspace navigation
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
+  const handleKeyDown = ( e, index ) => {
+    if ( e.key === "Backspace" && !otp[index] && index > 0 ) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   // paste OTP
-  const handlePaste = (e) => {
+  const handlePaste = ( e ) => {
     e.preventDefault();
 
-    const pastedData = e.clipboardData.getData("text").trim();
+    const pastedData = e.clipboardData.getData( "text" ).trim();
 
-    if (/^\d{4}$/.test(pastedData)) {
-      setOtp(pastedData);
+    if ( /^\d{4}$/.test( pastedData ) ) {
+      setOtp( pastedData );
       inputRefs.current[3]?.focus();
     }
   };
 
+
+  const dispatch = useDispatch()
+
+  const { user, userLoading, userSuccess, userError, userMessage } = useSelector( ( state ) => state.auth )
+
+
+
+  useEffect( () => {
+    if ( userError ) {
+      toast.error( userMessage )
+    }
+
+    if ( userSuccess ) {
+      navigate( '/main-page' )
+    }
+
+  }, [userError, userSuccess] )
+
+
+
   // verify OTP
-  const handleVerify = async (e) => {
+  const handleVerify = async ( e ) => {
     e.preventDefault();
 
-    if (otp.length !== 4) {
-      setError("Please enter a 4-digit code");
+    if ( otp.length !== 4 ) {
+      setError( "Please enter a 4-digit code" );
       return;
     }
 
-    setError("");
+    setError( "" );
 
-    let convertedData = JSON.parse(localStorage.getItem("user"));
-    let email = convertedData.email;
-
-    try {
-      const response = await axios.post(
-        "http://localhost:5174/api/auth/otp-verification",
-        {
-          otp: otp,
-          email: email,
-        },
-      );
-      navigate("/main-page");
-      localStorage.setItem("user", JSON.stringify(response.data));
-    } catch (error) {
-      alert(error.message);
+    const otpData = {
+      otp, email: user.email
     }
+
+    dispatch( verfiyOTP( otpData ) )
+
+
   };
 
   // resend OTP
   const handleResend = () => {
-    setResendDisabled(true);
-    setTimer(60);
-    setOtp("");
-    setError("");
+    setResendDisabled( true );
+    setTimer( 60 );
+    setOtp( "" );
+    setError( "" );
 
     inputRefs.current[0]?.focus();
 
-    console.log("Resending OTP...");
+    console.log( "Resending OTP..." );
   };
 
   return (
@@ -158,7 +172,7 @@ const OTPVerification = () => {
                 className="flex justify-center gap-4 mb-8"
                 onPaste={handlePaste}
               >
-                {[0, 1, 2, 3].map((index) => {
+                {[0, 1, 2, 3].map( ( index ) => {
                   const digit = otp[index] || "";
 
                   return (
@@ -167,18 +181,17 @@ const OTPVerification = () => {
                       type="text"
                       maxLength={1}
                       value={digit}
-                      onChange={(e) => handleChange(e, index)}
-                      onKeyDown={(e) => handleKeyDown(e, index)}
-                      ref={(el) => (inputRefs.current[index] = el)}
+                      onChange={( e ) => handleChange( e, index )}
+                      onKeyDown={( e ) => handleKeyDown( e, index )}
+                      ref={( el ) => ( inputRefs.current[index] = el )}
                       className={`w-14 h-14 text-center text-2xl font-bold border-2 rounded-xl focus:outline-none
-                      ${
-                        digit
+                      ${digit
                           ? "border-green-500 bg-green-50 text-green-700"
                           : "border-gray-300 focus:border-green-500"
-                      }`}
+                        }`}
                     />
                   );
-                })}
+                } )}
               </div>
 
               {/* Verify Button */}
@@ -186,7 +199,8 @@ const OTPVerification = () => {
                 type="submit"
                 className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl"
               >
-                Verify & Continue
+                {userLoading ? <BounceLoader size={10} color="white" /> : 'Verify & Continue'}
+
               </button>
             </form>
 

@@ -38,6 +38,11 @@ const userSchema = mongoose.Schema( {
         type: String,
         default: '#00C950',
         required: false
+    },
+    image: {
+        type: String,
+        default: 'https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png',
+        required: false
     }
 }, {
     timestamps: true

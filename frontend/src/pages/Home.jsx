@@ -1,56 +1,76 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiPhone, FiUser, FiLock, FiMail } from "react-icons/fi";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux'
+import { registerUser, userReset } from './../features/auth/authSlice';
+import toast from "react-hot-toast";
+
 const Home = () => {
-  const [formFields, setFormFields] = useState({
+  const [formFields, setFormFields] = useState( {
     name: "",
     email: "",
     password: "",
     number: "",
     c_password: "",
     theme: "#00C950",
-  });
+  } );
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState( "" );
   // const [loading, setLoading] = useState(false); // optional
 
   const { name, email, password, number, c_password, theme } = formFields;
 
-  const handleChange = (e) => {
-    setFormFields({
+  const handleChange = ( e ) => {
+    setFormFields( {
       ...formFields,
       [e.target.name]: e.target.value,
-    });
+    } );
   };
 
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
-  const handleRegister = async (e) => {
+
+  // get the data from global store
+
+  const { userError, userMessage, userLoading, userSuccess } = useSelector( ( state ) => state.auth )
+
+
+
+  useEffect( () => {
+    if ( userError ) {
+      toast.error( userMessage )
+    }
+
+    dispatch( userReset() )
+
+
+  }, [userError] )
+
+
+
+
+  const handleRegister = async ( e ) => {
     e.preventDefault();
-    setError("");
+    setError( "" );
 
-    if (password !== c_password) {
-      setError("Passwords do not match");
+    if ( password !== c_password ) {
+      setError( "Passwords do not match" );
       return;
     }
 
-    // setLoading(true);
-    try {
-      const registerData = { name, email, password, number, theme };
-      const response = await axios.post(
-        "http://localhost:5174/api/auth/register",
-        registerData,
-      );
-      localStorage.setItem("user", JSON.stringify(response.data));
-      console.log("Success:", response.data);
-      navigate("/otp");
-      // You can redirect or show success message here
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Registration failed");
+    const userData = {
+      name, email, password, number
     }
-    // setLoading(false);
+
+    dispatch( registerUser( userData ) )
+
+
+    navigate( '/otp' )
+
+
+
   };
 
   const themeOptions = [
@@ -135,7 +155,7 @@ const Home = () => {
                     onChange={handleChange}
                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all outline-none placeholder-gray-400"
                     placeholder="John Doe"
-                    required
+
                   />
                 </div>
               </div>
@@ -154,7 +174,7 @@ const Home = () => {
                     onChange={handleChange}
                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all outline-none placeholder-gray-400"
                     placeholder="you@example.com"
-                    required
+
                   />
                 </div>
               </div>
@@ -173,7 +193,7 @@ const Home = () => {
                     onChange={handleChange}
                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all outline-none placeholder-gray-400"
                     placeholder="+92 300 1234567"
-                    required
+
                   />
                 </div>
               </div>
@@ -184,14 +204,13 @@ const Home = () => {
                   Choose Your WhatsApp Theme
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {themeOptions.map((option) => (
+                  {themeOptions.map( ( option ) => (
                     <label
                       key={option.value}
-                      className={`relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${
-                        theme === option.value
-                          ? `${option.border} ring-2 ring-offset-2 ring-green-400`
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
+                      className={`relative flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${theme === option.value
+                        ? `${option.border} ring-2 ring-offset-2 ring-green-400`
+                        : "border-gray-200 hover:border-gray-300"
+                        }`}
                     >
                       <input
                         type="radio"
@@ -208,7 +227,7 @@ const Home = () => {
                         {option.label}
                       </span>
                     </label>
-                  ))}
+                  ) )}
                 </div>
               </div>
 
@@ -226,7 +245,7 @@ const Home = () => {
                     onChange={handleChange}
                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all outline-none placeholder-gray-400"
                     placeholder="••••••••"
-                    required
+
                   />
                 </div>
               </div>
@@ -245,7 +264,7 @@ const Home = () => {
                     onChange={handleChange}
                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all outline-none placeholder-gray-400"
                     placeholder="••••••••"
-                    required
+
                   />
                 </div>
               </div>
@@ -257,7 +276,7 @@ const Home = () => {
                 id="terms"
                 name="terms"
                 type="checkbox"
-                required
+
                 className="h-5 w-5 text-green-600 border-gray-300 rounded focus:ring-green-500 mt-0.5"
               />
               <label htmlFor="terms" className="ml-3 text-sm text-gray-600">
@@ -277,7 +296,7 @@ const Home = () => {
               <button
                 type="submit"
                 className="w-full py-4 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-0.5"
-                // disabled={loading}
+              // disabled={loading}
               >
                 {/* {loading ? 'Creating...' :  */}
                 Register & Unlock Theme
